@@ -31,82 +31,102 @@ class User
 		if (!ctype_alnum($username))
 		{
 			
-			// error message
+			// error handling for not inputting valid charachters
 			$username = "";
 			$password = "";
 			
+			//sends a response informing the client of invalid input
 			header("HTTP/1.1 400 Bad Request");
 			
 		}
 			
-		// changes the session ID to prevent cross site scripting
-		session_regenerate_id(); 
-			
 		// connect to the PDO database
 		$conn = connect_db();
 		
+		//Duplicates the password
 		$encrypt = $password;
 		
+		//encrypts the password
 		$encrypt = password_hash($password, PASSWORD_BCRYPT);
-			
-		// attempts the query and catches any errors
-		try
-		{
-			
-			// a prepared statement that should help prevent SQL Injections
-			$query = $conn->prepare("INSERT INTO users (username, password, name, joined, dob, email) VALUES (:username, :password, :name, Now(), :dob, :email)");	
-			$query->bindParam(":username", $username, PDO::PARAM_STR);
-			// not encrypted $query->bindParam(":password", $password, PDO::PARAM_STR);
-			$query->bindParam(":password", $encrypt, PDO::PARAM_STR);
-			$query->bindParam(":name", $name, PDO::PARAM_STR);
-			$query->bindParam(":dob", $dob, PDO::PARAM_STR);
-			$query->bindParam(":email", $email, PDO::PARAM_STR);
-			$query->execute();
-			
-			header("HTTP/1.1 201 Created");
 		
-		}
-		catch (PDOException $e)
+		//Checks to see if the username variable is not empty
+		if($username != "")
 		{
-			echo 'Connection failed: ' . $e->getMessage();
+			//If it is not empty:
+			
+			// attempts the query and catches any errors
+			try
+			{
+				
+				// a prepared statement that should help prevent SQL Injections
+				$query = $conn->prepare("INSERT INTO users (username, password, name, joined, dob, email) VALUES (:username, :password, :name, Now(), :dob, :email)");	
+				$query->bindParam(":username", $username, PDO::PARAM_STR);
+				$query->bindParam(":password", $encrypt, PDO::PARAM_STR);
+				$query->bindParam(":name", $name, PDO::PARAM_STR);
+				$query->bindParam(":dob", $dob, PDO::PARAM_STR);
+				$query->bindParam(":email", $email, PDO::PARAM_STR);
+				$query->execute();
+				
+				//If it works, informs the client the new field has been created
+				header("HTTP/1.1 201 Created");
+			
+			}
+			catch (PDOException $e)
+			{
+				echo 'Connection failed: ' . $e->getMessage();
+				header("HTTP/1.1 400 Bad Request");
+			}
+		}
+		else
+		{
+			//if it is empty then inform the client the request was invalid
+			
 			header("HTTP/1.1 400 Bad Request");
 		}
 		
 	}
 	
 	public function login_user($username, $password)
-	{
-		
-		// changes the session ID to prevent cross site scripting
-		session_regenerate_id(); 
+	{ 
 		
 		// Checks to see if the username variable only contains alpha numeric characters
 		if (!ctype_alnum($username))
 		{
 			
-			// error message
-			//echo "One does not simply enter an invalid set of characters...";
+			// error handling for not inputting valid charachters
 			$username = "";
 			$password = "";
 			
+			//sends a response informing the client of invalid input
 			header("HTTP/1.1 400 Bad Request");
 			
 		}
 		
+		// connect to the PDO database
 		$conn = connect_db();
+		
+		//Created an array ready to store the user data into
 		$arr = array();
-			
+		
+		//Searchs the database for a username matching the username requested by the client
 		$query = $conn->prepare("SELECT * from users WHERE username = :username");
 		
+		//binds the variables ready for the query to execute
 		$query->bindParam(":username", $username, PDO::PARAM_STR);
+		//executes the database query
 		$query->execute();
 		
+		//verifies that there is a search with at least 1 result
 		while($row = $query->fetch(PDO::FETCH_ASSOC))
 		{
+			//verifies if the password is the same as the encrypted stored in the database
 			if (password_verify($password, $row["password"]))
 			{
 				// password was correct
+				
+				//Informs the client the request was successfull
 				header("HTTP/1.1 200 OK");
+				//Informs the client that the response will be a JSON object
 				header ("Content-type: application/json");
 				
 				
@@ -123,24 +143,31 @@ class User
 				$user_ws = $row['website'];
 				$user_au = $row['author'];
 				
+				//Gets the number of stories the user has written
 				$stories = $conn->query("SELECT COUNT(owner) FROM stories WHERE owner = '$user_id'");
 				
+				//enables the variable to be used inside and outside the while loop
 				$user_st = "";
 				
+				//only adds a value to the variable if there is a valid value to add
 				while($row_stories = $stories->fetch())
 				{
 					$user_st = $row_stories['COUNT(owner)'];
 				}
 				
+				//adds the user data to an array
 				$user_array = array("ID" => $user_id, "username" => $user_nm, "password" => $user_pw, "name" => $user_rnm, "DOB" => $user_dob, "avatar" => $user_av, "Email" => $user_em, "joined" => $user_jd, "website" => $user_ws, "author" => $user_au, "stories" => $user_st);
 				
+				//adds the user_array to the array created earlier
 				array_push($arr, $user_array);
 				
+				//pushes the array out to the client
 				echo json_encode($arr);
 			
 			}
 			else
 			{
+				//If the password was incorrect inform the client the user is unauthorised
 				header("HTTP/1.1 401 Unauthorized");
 			}
 		}
