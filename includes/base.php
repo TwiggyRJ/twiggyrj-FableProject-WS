@@ -86,6 +86,91 @@ class User
 		
 	}
 	
+	public function update_user($username, $password, $name, $email, $avatar, $newPass)
+	{
+		
+		// Checks to see if the username variable only contains alpha numeric characters
+		if (!ctype_alnum($username))
+		{
+			
+			// error handling for not inputting valid charachters
+			$username = "";
+			$password = "";
+			
+			//sends a response informing the client of invalid input
+			header("HTTP/1.1 400 Bad Request");
+			
+		}
+			
+		// connect to the PDO database
+		$conn = connect_db();
+		
+		//Duplicates the password
+		$encrypt = $newPass;
+		
+		//encrypts the password
+		$encrypt = password_hash($newPass, PASSWORD_BCRYPT);
+		
+		//Checks to see if the username variable is not empty
+		if($username != "")
+		{
+			//If it is not empty:
+			
+			//Searchs the database for a username matching the username requested by the client
+			$queryCheck = $conn->prepare("SELECT * from users WHERE username = :username");
+			
+			//binds the variables ready for the query to execute
+			$queryCheck->bindParam(":username", $username, PDO::PARAM_STR);
+			//executes the database query
+			$queryCheck->execute();
+			
+			//verifies that there is a search with at least 1 result
+			while($row = $queryCheck->fetch(PDO::FETCH_ASSOC))
+			{
+				//verifies if the password is the same as the encrypted stored in the database
+				if (password_verify($password, $row["password"]))
+				{
+					// password was correct
+					
+					// attempts the query and catches any errors
+					try
+					{
+						
+						// a prepared statement that should help prevent SQL Injections
+						$query = $conn->prepare("UPDATE users SET (password, name, email) VALUES (:password, :name, :email, :avatar)");	
+						$query->bindParam(":password", $encrypt, PDO::PARAM_STR);
+						$query->bindParam(":name", $name, PDO::PARAM_STR);
+						$query->bindParam(":email", $email, PDO::PARAM_STR);
+						$query->bindParam(":avatar", $avatar, PDO::PARAM_STR);
+						$query->execute();
+						
+						//If it works, informs the client the new field has been created
+						header("HTTP/1.1 200 OK");
+					
+					}
+					catch (PDOException $e)
+					{
+						echo 'Connection failed: ' . $e->getMessage();
+						header("HTTP/1.1 400 Bad Request");
+					}
+				
+				}
+				else
+				{
+					//If the password was incorrect inform the client the user is unauthorised
+					header("HTTP/1.1 401 Unauthorized");
+				}
+			}
+		}
+		else
+		{
+			//if it is empty then inform the client the request was invalid
+			
+			header("HTTP/1.1 400 Bad Request");
+		}
+		
+	}
+	
 	public function login_user($username, $password)
 	{ 
 		
