@@ -86,7 +86,7 @@ class User
 		
 	}
 	
-	public function update_user($username, $password, $name, $email, $avatar, $newPass)
+	public function update_user($username, $password, $name, $email, $website, $avatar, $newPass)
 	{
 		
 		// Checks to see if the username variable only contains alpha numeric characters
@@ -137,11 +137,13 @@ class User
 					{
 						
 						// a prepared statement that should help prevent SQL Injections
-						$query = $conn->prepare("UPDATE users SET (password, name, email) VALUES (:password, :name, :email, :avatar)");	
+						$query = $conn->prepare("UPDATE users SET password = :password, name = :name, email = :email, avatar = :avatar, website = :website WHERE username = :username");	
+						$query->bindParam(":username", $username, PDO::PARAM_STR);
 						$query->bindParam(":password", $encrypt, PDO::PARAM_STR);
 						$query->bindParam(":name", $name, PDO::PARAM_STR);
 						$query->bindParam(":email", $email, PDO::PARAM_STR);
 						$query->bindParam(":avatar", $avatar, PDO::PARAM_STR);
+						$query->bindParam(":website", $website, PDO::PARAM_STR);
 						$query->execute();
 						
 						//If it works, informs the client the new field has been created
