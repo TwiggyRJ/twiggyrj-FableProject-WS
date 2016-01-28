@@ -229,6 +229,7 @@ class User
 				$user_em = $row['email'];
 				$user_ws = $row['website'];
 				$user_au = $row['author'];
+				$user_ad = $row['admin'];
 				
 				//Gets the number of stories the user has written
 				$stories = $conn->query("SELECT COUNT(owner) FROM stories WHERE owner = '$user_id'");
@@ -243,7 +244,7 @@ class User
 				}
 				
 				//adds the user data to an array
-				$user_array = array("ID" => $user_id, "username" => $user_nm, "password" => $user_pw, "name" => $user_rnm, "DOB" => $user_dob, "avatar" => $user_av, "Email" => $user_em, "joined" => $user_jd, "website" => $user_ws, "author" => $user_au, "stories" => $user_st);
+				$user_array = array("ID" => $user_id, "username" => $user_nm, "password" => $user_pw, "name" => $user_rnm, "DOB" => $user_dob, "avatar" => $user_av, "Email" => $user_em, "joined" => $user_jd, "website" => $user_ws, "admin" => $user_ad,"author" => $user_au, "stories" => $user_st);
 				
 				//adds the user_array to the array created earlier
 				array_push($arr, $user_array);
