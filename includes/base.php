@@ -398,6 +398,100 @@ class Story
 		}
 		
 	}
+	
+	public function get_stories_auth($username, $password, $search, $method)
+	{
+		
+		$conn = connect_db();
+		$arr = array();
+		
+		$queryCheck = $conn->prepare("SELECT * from users WHERE username = :username");
+		
+		$queryCheck->bindParam(":username", $username, PDO::PARAM_STR);
+		$queryCheck->execute();
+		
+		while($rowCheck = $queryCheck->fetch(PDO::FETCH_ASSOC))
+		{
+			if (password_verify($password, $rowCheck["password"]))
+			{
+				
+				$user_id = $rowCheck['ID'];
+				
+				if($method=="title")
+				{
+					$results = $conn->query("SELECT * from stories where title like '$search' ORDER BY ID");
+				}
+				elseif ($method=="type")
+				{
+					$results = $conn->query("SELECT * from stories where type = '$search' ORDER BY ID");
+				}
+				elseif (is_numeric($method))
+				{
+					$results = $conn->query("SELECT * from stories where title like '$search' AND owner = '$method' ORDER BY ID DESC");
+				}
+				elseif ($method=="id")
+				{
+					$results = $conn->query("SELECT * from stories where ID ='$search'");
+				}
+				elseif ($method=="titleOnly")
+				{
+					$results = $conn->query("SELECT title from stories where owner = '$user_id' ORDER BY ID");
+				}
+				elseif ($method=="allStoryData")
+				{
+					$results = $conn->query("SELECT * from stories where owner = '$user_id' ORDER BY ID");
+				}
+				
+				$rev_count = 0;
+				
+				if ($results->rowCount() > 0)
+				{
+					
+					header ("Content-type: application/json");
+					header("HTTP/1.1 200 OK");
+					
+					while($row = $results->fetch()){
+						
+						if($method == "titleOnly")
+						{
+							$title = $row['title'];
+						
+							// collects story data, then prepares the data ready for transport
+							
+							$stories_array = array("title" => $title);
+								
+							array_push($arr, $stories_array);
+						}
+						else
+						{
+							$id = $row['ID'];
+							$title = $row['title'];
+							$desc = $row['description'];
+							$type = $row['type'];
+							$owner = $row['owner'];
+							$rec = $row['recommended'];
+							$img = $row['image'];
+							
+							// collects story data, then prepares the data ready for transport
+							
+							$stories_array = array("ID" => $id, "title" => $title, "description" => $desc, "type" => $type, "ownerID" => $owner, "ownerName" => $username, "image" => $img, "recommended" => $rec);
+								
+							array_push($arr, $stories_array);
+						}
+						echo json_encode($arr);
+					}
+				}
+				else
+				{
+					header("HTTP/1.1 404 Not Found");
+				}
+			}
+			else
+			{
+				header("HTTP/1.1 403 Unauthorized");
+			}
+		}
+	}
 
 }
 

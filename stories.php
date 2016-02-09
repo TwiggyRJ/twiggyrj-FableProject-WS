@@ -8,7 +8,22 @@
 	switch($header)
 	{
 		case "get":
-			if($_SERVER['REQUEST_METHOD']=='GET' && isset($_GET['story']))
+			if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && isset($_GET['story']))
+			{
+				$user = $_SERVER["PHP_AUTH_USER"];
+				$pass = $_SERVER["PHP_AUTH_PW"];
+				$title = $_POST['title'];
+				
+				if($_GET['story'] == "all")
+				{
+					$story = $base->get_stories_auth($user, $pass, $_GET['story'], "titleOnly");
+				}
+				if($_GET['story'] == "allStoryData")
+				{
+					$story = $base->get_stories_auth($user, $pass, $_GET['story'], "all");
+				}
+			}
+			elseif($_SERVER['REQUEST_METHOD']=='GET' && isset($_GET['story']))
 			{
 				if ($_GET['story'] == "all")
 				{
