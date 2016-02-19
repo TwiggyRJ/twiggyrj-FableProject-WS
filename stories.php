@@ -12,11 +12,11 @@
 			{
 				$user = $_SERVER["PHP_AUTH_USER"];
 				$pass = $_SERVER["PHP_AUTH_PW"];
-				$title = $_POST['title'];
+				$title = $_POST['story'];
 				
-				if($_GET['story'] == "all")
+				if($_GET['story'] == "titleOnly")
 				{
-					$story = $base->get_stories_auth($user, $pass, $_GET['story'], "titleOnly");
+					$story = $base->get_stories_auth($user, $pass, $title, "titleOnly");
 				}
 				if($_GET['story'] == "allStoryData")
 				{
