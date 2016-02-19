@@ -48,7 +48,7 @@
 			if($_SERVER['REQUEST_METHOD']=='POST')
 			{
 				//Checks to see if username and password has been set via Basic Authentication in the request header and if the name, email and dob data has been sent via a method of post
-				if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && isset($_POST['storyTitle']) && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['pageNumber']) && isset($_POST['pageOptionA']))
+				if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && isset($_POST['storyTitle']) && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['pageNumber']) && isset($_POST['pageOptionA'] && isset($_POST['pageOptionADest']))
 				{
 					//If the username and password, name, email and dob has been sent via the correct method then:
 					
@@ -70,9 +70,11 @@
 					$pageFirst = $_POST['pageFirst'];
 					$pageOptionA = $_POST['pageOptionA'];
 					$pageOptionB = $_POST['pageOptionB'];
+					$pageOptionA_Dest = $_POST['pageOptionADest'];
+					$pageOptionB_Dest = $_POST['pageOptionBDest'];
 					$pageInteractionOption = $_POST['pageInteractionOption'];
 					$pageReward = $_POST['pageReward'];
-					$pagedata = $base->new_page($user, $pass, $storyTitle, $title, $content, $pageNumber, $pageEInteraction, $pageEInteractionAnswer, $pageMInteraction, $pageMInteractionAnswer, $pageHInteraction, $pageHInteractionAnswer, $pageJInteraction, $pageJInteractionAnswer, $pageOptionA, $pageOptionB, $pageInteractionOption, $pageReward, $pageFirst);
+					$pagedata = $base->new_page($user, $pass, $storyTitle, $title, $content, $pageNumber, $pageEInteraction, $pageEInteractionAnswer, $pageMInteraction, $pageMInteractionAnswer, $pageHInteraction, $pageHInteractionAnswer, $pageJInteraction, $pageJInteractionAnswer, $pageOptionA, $pageOptionA_Dest, $pageOptionB, $pageOptionB_Dest, $pageInteractionOption, $pageReward, $pageFirst);
 				}
 				else
 				{

@@ -348,7 +348,7 @@ class Story
 		}
 	}
 	
-	public function new_page($username, $password, $story, $title, $content, $number, $easy_interaction, $easy_interaction_answer, $medium_interaction, $medium_interaction_answer, $hard_interaction, $hard_interaction_answer, $humour_interaction, $humour_interaction_answer, $option1, $option2, $optionSpecial, $reward, $first)
+	public function new_page($username, $password, $story, $title, $content, $number, $easy_interaction, $easy_interaction_answer, $medium_interaction, $medium_interaction_answer, $hard_interaction, $hard_interaction_answer, $humour_interaction, $humour_interaction_answer, $option1, $option1_Dest, $option2, $option2_Dest, $optionSpecial, $reward, $first)
 	{
 		$conn = connect_db();
 		
@@ -449,7 +449,7 @@ class Story
 						
 						
 						// a prepared statement that should help prevent SQL Injections
-						$query = $conn->prepare("INSERT INTO page (story, title, content, number, easy_interaction, medium_interaction, hard_interaction, option1, option2, optionSpecial, first) VALUES (:story, :title, :content, :number, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option2, :optionSpecial, :first)");	
+						$query = $conn->prepare("INSERT INTO page (story, title, content, number, easy_interaction, medium_interaction, hard_interaction, option1, option2, optionSpecial, first) VALUES (:story, :title, :content, :number, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :first)");	
 						$query->bindParam(":story", $story, PDO::PARAM_STR);
 						$query->bindParam(":title", $title, PDO::PARAM_STR);
 						$query->bindParam(":content", $content, PDO::PARAM_STR);
@@ -459,7 +459,9 @@ class Story
 						$query->bindParam(":hard_interaction", $hardIntID, PDO::PARAM_STR);
 						$query->bindParam(":humour_interaction", $humourIntID, PDO::PARAM_STR);
 						$query->bindParam(":option1", $option1, PDO::PARAM_STR);
+						$query->bindParam(":option1Dest", $option1_Dest, PDO::PARAM_STR);
 						$query->bindParam(":option2", $option2, PDO::PARAM_STR);
+						$query->bindParam(":option2Dest", $option2_Dest, PDO::PARAM_STR);
 						$query->bindParam(":optionSpecial", $optionSpecial, PDO::PARAM_STR);
 						$query->bindParam(":first", $first, PDO::PARAM_STR);
 						$query->execute();
