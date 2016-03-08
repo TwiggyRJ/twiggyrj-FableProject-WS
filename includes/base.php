@@ -449,7 +449,7 @@ class Story
 						
 						
 						// a prepared statement that should help prevent SQL Injections
-						$query = $conn->prepare("INSERT INTO page (story, title, content, number, easy_interaction, medium_interaction, hard_interaction, option1, option2, optionSpecial, first) VALUES (:story, :title, :content, :number, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :first)");	
+						$query = $conn->prepare("INSERT INTO page (story, title, content, number, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, first) VALUES (:story, :title, :content, :number, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :first)");	
 						$query->bindParam(":story", $story, PDO::PARAM_STR);
 						$query->bindParam(":title", $title, PDO::PARAM_STR);
 						$query->bindParam(":content", $content, PDO::PARAM_STR);
@@ -526,6 +526,8 @@ class Story
 				$owner = $row['owner'];
 				$rec = $row['recommended'];
 				$img = $row['image'];
+				$cre = $row['created'];
+				$vis = $row['visible'];
 				$ownerUserName = "";
 				
 				$queryCheckName = $conn->prepare("SELECT * from users WHERE ID = :id");
@@ -540,7 +542,7 @@ class Story
 				
 				// collects story data, then prepares the data ready for transport
 				
-				$stories_array = array("ID" => $id, "title" => $title, "description" => $desc, "type" => $type, "ownerID" => $owner, "ownerName" => $ownerUserName, "image" => $img, "recommended" => $rec);
+				$stories_array = array("ID" => $id, "title" => $title, "description" => $desc, "type" => $type, "ownerID" => $owner, "ownerName" => $ownerUserName, "image" => $img, "recommended" => $rec, "created" => $cre, "visible" => $vis);
 					
 				array_push($arr, $stories_array);
 					
