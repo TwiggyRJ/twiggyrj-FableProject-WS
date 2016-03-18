@@ -12,32 +12,40 @@
 	
 		//Checks the get action method
 		case "get":
-			if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && isset($_GET['story'] && isset($_GET['page']))
+			if($_SERVER['REQUEST_METHOD']=='GET')
 			{
-				$user = $_SERVER["PHP_AUTH_USER"];
-				$pass = $_SERVER["PHP_AUTH_PW"];
-				$title = $_POST['story'];
-				
-				if($_GET['story'] == "titleOnly")
+				if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && isset($_GET['story']) && isset($_GET['page']))
 				{
-					$story = $base->get_pages_auth($user, $pass, $title, "titleOnly");
+					$user = $_SERVER["PHP_AUTH_USER"];
+					$pass = $_SERVER["PHP_AUTH_PW"];
+					$title = $_POST['story'];
+					
+					if($_GET['story'] == "titleOnly")
+					{
+						$story = $base->get_pages_auth($user, $pass, $title, "titleOnly");
+					}
+					if($_GET['story'] == "allStoryData")
+					{
+						$story = $base->get_pages_auth($user, $pass, $_GET['story'], "all");
+					}
 				}
-				if($_GET['story'] == "allStoryData")
+				elseif(isset($_GET['story']) && isset($_GET['page']))
 				{
-					$story = $base->get_pages_auth($user, $pass, $_GET['story'], "all");
+					if (is_numeric($_GET['page']) && is_numeric($_GET['story']))
+					{
+						$story = $base->get_pages($_GET['page'], $_GET['story']);
+					}
 				}
-			}
-			elseif($_SERVER['REQUEST_METHOD']=='GET' && isset($_GET['story'] && isset($_GET['page']))
-			{
-				if (is_numeric($_GET['page']) && is_numeric($_GET['story']))
+				else
 				{
-					$story = $base->get_pages($_GET['page'], $_GET['story']);
+					header("HTTP/1.1 400 Bad Request");
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
 			}
+			
 			break;
 
 		//Checks the post action method
