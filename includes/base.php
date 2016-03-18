@@ -659,6 +659,105 @@ class Story
 			}
 		}
 	}
+
+	public function get_pages($page, $story)
+	{
+		$conn = connect_db();
+		$arr = array();
+		
+		$query = $conn->prepare("SELECT * from pages WHERE story = :story AND number = :page");
+
+		$query->bindParam(":story", $story, PDO::PARAM_STR);
+		$query->bindParam(":page", $page, PDO::PARAM_STR);
+
+		if ($query->rowCount() > 0)
+		{
+			header ("Content-type: application/json");
+			header("HTTP/1.1 200 OK");
+			
+			while($row = $results->fetch())
+			{
+
+				$id = $row['ID'];
+				$story = $row['story'];
+				$title = $row['title'];
+				$content = $row['content'];
+				$content_2 = $row['content_2'];
+				$number = $row['number'];
+				$interaction = $row['interaction'];
+				$easy_interaction = $row['easy_interaction'];
+				$easy_interaction_answer = "";
+				$interaction_destination = "";
+				$interaction_failure = "";
+				$interaction_type = "";
+				$medium_interaction = $row['medium_interaction'];
+				$medium_interaction_answer = "";
+				$hard_interaction = $row['hard_interaction'];
+				$hard_interaction_answer = "";
+				$humour_interaction = $row['humour_interaction'];
+				$humour_interaction_answer = "";
+				$option1 = $row['option1'];
+				$option1_Dest = $row['option1_Dest'];
+				$option2 = $row['option2'];
+				$option2_Dest = $row['option2_Dest'];
+				$optionSpecialSuccess = "";
+				$optionSpecialFailure = "";
+				$first = $row['first'];
+
+				//Gets the easy difficulty interations from the database
+				$interactionE = $conn->query("SELECT * FROM interactions WHERE ID = '$easy_interaction'");
+				
+				//picks the data
+				while($row_intE = $interactionE->fetch())
+				{
+					$easy_interaction = $row_intE['interaction'];
+					$easy_interaction_answer = $row_intE['answer'];
+					$interaction_type = $row_intE['type'];
+					$interaction_destination = $row_intE['destination'];
+					$interaction_failure = $row_intE['failure'];
+				}
+
+				//Gets the medium difficulty interations from the database
+				$interactionM = $conn->query("SELECT * FROM interactions WHERE ID = '$medium_interaction'");
+				
+				//picks the data
+				while($row_intM = $interactionM->fetch())
+				{
+					$medium_interaction = $row_intM['interaction'];
+					$medium_interaction_answer = $row_intM['answer'];
+				}
+
+				//Gets the hard difficulty interations from the database
+				$interactionH = $conn->query("SELECT * FROM interactions WHERE ID = '$hard_interaction'");
+				
+				//picks the data
+				while($row_intH = $interactionH->fetch())
+				{
+					$hard_interaction = $row_intH['interaction'];
+					$hard_interaction_answer = $row_intH['answer'];
+				}
+
+				//Gets the humour difficulty interations from the database
+				$interactionHu = $conn->query("SELECT * FROM interactions WHERE ID = '$humour_interaction'");
+				
+				//picks the data
+				while($row_intHu = $interactionHu->fetch())
+				{
+					$humour_interaction = $row_intHu['interaction'];
+					$humour_interaction_answer = $row_intHu['answer'];
+				}
+
+				$pages_array = array("ID" => $id, "story" => $story, "title" => $title, "content" => $content, "content_2" => $content_2, "number" => $number, "interaction" => $interaction, "interaction_type" => $interaction_type, "easy_interaction" => $easy_interaction, "easy_interaction_answer" => $easy_interaction_answer, "medium_interaction" => $medium_interaction_answer, "hard_interaction" => $hard_interaction, "hard_interaction_answer" => $hard_interaction_answer, "humour_interaction" => $humour_interaction, "humour_interaction_answer" => $humour_interaction_answer, "option1" => $option1, "option1_Dest" => $option1_Dest, "option2" => $option2, "option2_Dest" => $option2_Dest, "optionSpecialSuccess" => $optionSpecialSuccess, "optionSpecialFailure" => $optionSpecialFailure, "first" => $first);
+				
+				array_push($arr, $pages_array);
+				
+				echo json_encode($arr);
+							
+			}
+		}
+
+
+	}
 	
 }
 
