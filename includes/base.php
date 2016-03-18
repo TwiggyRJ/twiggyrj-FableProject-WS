@@ -675,21 +675,76 @@ class GenericInfo
 				$version = $row['version'];
 				$content = $row['content'];
 				$content_2 = $row['content_2'];
+				$content_3 = $row['content_3'];
+				$content_4 = $row['content_4'];
+				$content_5 = $row['content_5'];
+				$content_6 = $row['content_6'];
 				$about = $row['about'];
 				$date = $row['date'];
 
 				// collects story data, then prepares the data ready for transport
 				
-				$updates_array = array("ID" => $id, "version" => $version, "content" => $content, "content_2" => $content_2, "about" => $about, "ownerID" => $owner, "date" => $date);
+				$updates_array = array("ID" => $id, "version" => $version, "content" => $content, "content_2" => $content_2, "content_3" => $content_3, "content_4" => $content_4, "content_5" => $content_5, "content_6" => $content_6, "about" => $about, "date" => $date);
 				
 				array_push($arr, $updates_array);
 				
 				echo json_encode($arr);
 			}
 		}
+		elseif($method == "privacy")
+		{
+			$query = $conn->prepare("SELECT * from policies WHERE type = 'privacy' ORDER BY updated DESC LIMIT 1");
+			$query->execute();
+			
+			while($row = $query->fetch(PDO::FETCH_ASSOC))
+			{
+				header ("Content-type: application/json");
+				header("HTTP/1.1 200 OK");
+				
+				$id = $row['ID'];
+				$title = $row['title'];
+				$updated = $row['updated'];
+				$content = $row['content'];
+				$type = $row['type'];
+
+				// collects story data, then prepares the data ready for transport
+				
+				$privacy_array = array("ID" => $id, "title" => $title, "updated" => $updated, "content" => $content,  "type" => $type);
+				
+				array_push($arr, $privacy_array);
+				
+				echo json_encode($arr);
+			}
+		}
 		else
 		{
+			$query = $conn->prepare("SELECT * from updates WHERE version = $method ORDER BY date DESC LIMIT 1");
+			$query->execute();
 			
+			while($row = $query->fetch(PDO::FETCH_ASSOC))
+			{
+				header ("Content-type: application/json");
+				header("HTTP/1.1 200 OK");
+				
+				$id = $row['ID'];
+				$version = $row['version'];
+				$content = $row['content'];
+				$content_2 = $row['content_2'];
+				$content_3 = $row['content_3'];
+				$content_4 = $row['content_4'];
+				$content_5 = $row['content_5'];
+				$content_6 = $row['content_6'];
+				$about = $row['about'];
+				$date = $row['date'];
+
+				// collects story data, then prepares the data ready for transport
+				
+				$updates_array = array("ID" => $id, "version" => $version, "content" => $content, "content_2" => $content_2, "content_3" => $content_3, "content_4" => $content_4, "content_5" => $content_5, "content_6" => $content_6, "about" => $about, "date" => $date);
+				
+				array_push($arr, $updates_array);
+				
+				echo json_encode($arr);
+			}
 		}
 	}
 	
