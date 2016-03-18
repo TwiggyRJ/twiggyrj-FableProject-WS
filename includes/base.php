@@ -348,7 +348,7 @@ class Story
 		}
 	}
 	
-	public function new_page($username, $password, $story, $title, $content, $number, $easy_interaction, $easy_interaction_answer, $medium_interaction, $medium_interaction_answer, $hard_interaction, $hard_interaction_answer, $humour_interaction, $humour_interaction_answer, $option1, $option1_Dest, $option2, $option2_Dest, $optionSpecial, $reward, $first)
+	public function new_page($username, $password, $story, $title, $content, $number, $question, $easy_interaction, $easy_interaction_answer, $medium_interaction, $medium_interaction_answer, $hard_interaction, $hard_interaction_answer, $humour_interaction, $humour_interaction_answer, $option1, $option1_Dest, $option2, $option2_Dest, $optionSpecial, $reward, $first)
 	{
 		$conn = connect_db();
 		
@@ -374,8 +374,10 @@ class Story
 						
 						if($easy_interaction != "" && $easy_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (page, interaction, answer, difficulty) VALUES (:page, :interaction, :answer, :difficulty)");	
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+							$query->bindParam(":story", $story, PDO::PARAM_STR);
 							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $easy_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $easy_interaction_answer, PDO::PARAM_STR);
 							$query->bindParam(":difficulty", "easy", PDO::PARAM_STR);
@@ -393,8 +395,10 @@ class Story
 						
 						if($medium_interaction != "" && $medium_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (page, interaction, answer, difficulty) VALUES (:page, :interaction, :answer, :difficulty)");	
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+							$query->bindParam(":story", $story, PDO::PARAM_STR);
 							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $medium_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $medium_interaction_answer, PDO::PARAM_STR);
 							$query->bindParam(":difficulty", "medium", PDO::PARAM_STR);
@@ -412,8 +416,10 @@ class Story
 						
 						if($hard_interaction != "" && $hard_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (page, interaction, answer, difficulty) VALUES (:page, :interaction, :answer, :difficulty)");	
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+							$query->bindParam(":story", $story, PDO::PARAM_STR);
 							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $hard_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $hard_interaction_answer, PDO::PARAM_STR);
 							$query->bindParam(":difficulty", "hard", PDO::PARAM_STR);
@@ -431,8 +437,10 @@ class Story
 						
 						if($humour_interaction != "" && $humour_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (page, interaction, answer, difficulty) VALUES (:page, :interaction, :answer, :difficulty)");	
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+							$query->bindParam(":story", $story, PDO::PARAM_STR);
 							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $humour_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $humour_interaction_answer, PDO::PARAM_STR);
 							$query->bindParam(":difficulty", "humour", PDO::PARAM_STR);
@@ -449,11 +457,12 @@ class Story
 						
 						
 						// a prepared statement that should help prevent SQL Injections
-						$query = $conn->prepare("INSERT INTO page (story, title, content, number, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, first) VALUES (:story, :title, :content, :number, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :first)");	
+						$query = $conn->prepare("INSERT INTO page (story, title, content, number, interaction, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, first) VALUES (:story, :title, :content, :number, :question, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :first)");	
 						$query->bindParam(":story", $story, PDO::PARAM_STR);
 						$query->bindParam(":title", $title, PDO::PARAM_STR);
 						$query->bindParam(":content", $content, PDO::PARAM_STR);
 						$query->bindParam(":number", $number, PDO::PARAM_STR);
+						$query->bindParam(":question", $question, PDO::PARAM_STR);
 						$query->bindParam(":easy_interaction", $easyIntID, PDO::PARAM_STR);
 						$query->bindParam(":medium_interaction", $mediumIntID, PDO::PARAM_STR);
 						$query->bindParam(":hard_interaction", $hardIntID, PDO::PARAM_STR);

@@ -10,6 +10,36 @@
 	switch($header)
 	{
 	
+		//Checks the get action method
+		case "get":
+			if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && isset($_GET['story'] && isset($_GET['page']))
+			{
+				$user = $_SERVER["PHP_AUTH_USER"];
+				$pass = $_SERVER["PHP_AUTH_PW"];
+				$title = $_POST['story'];
+				
+				if($_GET['story'] == "titleOnly")
+				{
+					$story = $base->get_pages_auth($user, $pass, $title, "titleOnly");
+				}
+				if($_GET['story'] == "allStoryData")
+				{
+					$story = $base->get_pages_auth($user, $pass, $_GET['story'], "all");
+				}
+			}
+			elseif($_SERVER['REQUEST_METHOD']=='GET' && isset($_GET['story'] && isset($_GET['page']))
+			{
+				if (is_numeric($_GET['page']) && is_numeric($_GET['story']))
+				{
+					$story = $base->get_pages($_GET['page'], $_GET['story']);
+				}
+			}
+			else
+			{
+				header("HTTP/1.1 400 Bad Request");
+			}
+			break;
+
 		//Checks the post action method
 		case "post":
 		
@@ -28,6 +58,7 @@
 					$title = $_POST['title'];
 					$content = $_POST['content'];
 					$pageInteraction = $_POST['pageInteraction'];
+					$pageInteractionType = $_POST['pageInteractionType'];
 					$pageEInteraction = $_POST['pageEInteraction'];
 					$pageEInteractionAnswer = $_POST['pageEInteractionAnswer'];
 					$pageMInteraction = $_POST['pageMInteraction'];
@@ -44,7 +75,7 @@
 					$pageOptionB_Dest = $_POST['pageOptionBDest'];
 					$pageInteractionOption = $_POST['pageInteractionOption'];
 					$pageReward = $_POST['pageReward'];
-					$pagedata = $base->new_page($user, $pass, $storyTitle, $title, $content, $pageNumber, $pageInteraction, $pageEInteraction, $pageEInteractionAnswer, $pageMInteraction, $pageMInteractionAnswer, $pageHInteraction, $pageHInteractionAnswer, $pageJInteraction, $pageJInteractionAnswer, $pageOptionA, $pageOptionA_Dest, $pageOptionB, $pageOptionB_Dest, $pageInteractionOption, $pageReward, $pageFirst);
+					$pagedata = $base->new_page($user, $pass, $storyTitle, $title, $content, $pageNumber, $pageInteraction, $pageInteractionType, $pageEInteraction, $pageEInteractionAnswer, $pageMInteraction, $pageMInteractionAnswer, $pageHInteraction, $pageHInteractionAnswer, $pageJInteraction, $pageJInteractionAnswer, $pageOptionA, $pageOptionA_Dest, $pageOptionB, $pageOptionB_Dest, $pageInteractionOption, $pageReward, $pageFirst);
 				}
 				else
 				{
