@@ -3,12 +3,11 @@ header("Access-Control-Allow-Origin: kshatriya.co.uk");
 // Table Of Contents
 // 1.0: Config and none class functions
 // 1.1: User Class for logining, registering and editing users
-// 1.2: Base Functionality
+// 1.2: Game Date
+// 1.3: Generic App Wide Info
 
 
 // 1.0: Config and none class functions
-
-// includes the password library for encrypting the password for storage on the SQL Database
 
 date_default_timezone_set('Europe/London');
 
@@ -262,7 +261,7 @@ class User
 	}
 }
 
-// 1.2: Base Functionality
+// 1.2: Game Data
 
 class Story
 {
@@ -457,7 +456,7 @@ class Story
 						
 						
 						// a prepared statement that should help prevent SQL Injections
-						$query = $conn->prepare("INSERT INTO page (story, title, content, number, interaction, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, first) VALUES (:story, :title, :content, :number, :question, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :first)");	
+						$query = $conn->prepare("INSERT INTO page (story, title, content, number, interaction, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, first) VALUES (:story, :title, :content, :number, :question, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :goodies, :first)");	
 						$query->bindParam(":story", $story, PDO::PARAM_STR);
 						$query->bindParam(":title", $title, PDO::PARAM_STR);
 						$query->bindParam(":content", $content, PDO::PARAM_STR);
@@ -472,6 +471,7 @@ class Story
 						$query->bindParam(":option2", $option2, PDO::PARAM_STR);
 						$query->bindParam(":option2Dest", $option2_Dest, PDO::PARAM_STR);
 						$query->bindParam(":optionSpecial", $optionSpecial, PDO::PARAM_STR);
+						$query->bindParam(":goodies", $reward, PDO::PARAM_STR);
 						$query->bindParam(":first", $first, PDO::PARAM_STR);
 						$query->execute();
 						
@@ -666,24 +666,31 @@ class Story
 		$conn = connect_db();
 		$arr = array();
 
+
+		//If the client is requesting the first page of the book
 		if($page == "First")
 		{
 			$results = $conn->query("SELECT * from page where story ='$story' AND first = TRUE ORDER BY ID");
 		}
+		//If the client is requesting a specific page of the book
 		else
 		{
 			$results = $conn->query("SELECT * from page where story ='$story' AND page_number = '$page' ORDER BY ID");
 		}
 		
 
+		//Checks that we have some rows
 		if ($results->rowCount() > 0)
 		{
 			
+			//Tell the client to expect JSON
 			header ("Content-type: application/json");
+			//Set the header that the request was successfull
 			header("HTTP/1.1 200 OK");
 			
 			while($row = $results->fetch()){
 			
+				//Get every row from the page table
 				$id = $row['ID'];
 				$story = $row['story'];
 				$title = $row['title'];
@@ -708,6 +715,7 @@ class Story
 				$option2_Dest = $row['option2_Dest'];
 				$optionSpecialSuccess = "";
 				$optionSpecialFailure = "";
+				$goodies = $row['goodies'];
 				$first = $row['first'];
 
 				//Gets the easy difficulty interations from the database
@@ -719,8 +727,8 @@ class Story
 					$easy_interaction = $row_intE['interaction'];
 					$easy_interaction_answer = $row_intE['answer'];
 					$interaction_type = $row_intE['type'];
-					$interaction_destination = $row_intE['destination'];
-					$interaction_failure = $row_intE['failure'];
+					$optionSpecialSuccess = $row_intE['destination'];
+					$optionSpecialFailure = $row_intE['failure'];
 				}
 
 				//Gets the medium difficulty interations from the database
@@ -753,14 +761,17 @@ class Story
 					$humour_interaction_answer = $row_intHu['answer'];
 				}
 
-				$pages_array = array("ID" => $id, "story" => $story, "title" => $title, "content" => $content, "content_2" => $second_content, "number" => $number, "interaction" => $interaction, "interaction_type" => $interaction_type, "easy_interaction" => $easy_interaction, "easy_interaction_answer" => $easy_interaction_answer, "medium_interaction" => $medium_interaction_answer, "hard_interaction" => $hard_interaction, "hard_interaction_answer" => $hard_interaction_answer, "humour_interaction" => $humour_interaction, "humour_interaction_answer" => $humour_interaction_answer, "option1" => $option1, "option1_Dest" => $option1_Dest, "option2" => $option2, "option2_Dest" => $option2_Dest, "optionSpecialSuccess" => $optionSpecialSuccess, "optionSpecialFailure" => $optionSpecialFailure, "first" => $first);
+				//Makes an array with all the picked data ready to be converted to JSON
+				$pages_array = array("ID" => $id, "story" => $story, "title" => $title, "content" => $content, "content_2" => $second_content, "number" => $number, "interaction" => $interaction, "interaction_type" => $interaction_type, "easy_interaction" => $easy_interaction, "easy_interaction_answer" => $easy_interaction_answer, "medium_interaction" => $medium_interaction, "medium_interaction_answer" => $medium_interaction_answer, "hard_interaction" => $hard_interaction, "hard_interaction_answer" => $hard_interaction_answer, "humour_interaction" => $humour_interaction, "humour_interaction_answer" => $humour_interaction_answer, "option1" => $option1, "option1_Dest" => $option1_Dest, "option2" => $option2, "option2_Dest" => $option2_Dest, "optionSpecialSuccess" => $optionSpecialSuccess, "optionSpecialFailure" => $optionSpecialFailure, "goodies" => $goodies, "first" => $first);
 				
 				array_push($arr, $pages_array);
 					
+				//Converts to JSON
 				echo json_encode($arr);
 				
 			}
 		}
+		//If we don't tell the client Nothing was found
 		else
 		{
 			header("HTTP/1.1 404 Not Found");
