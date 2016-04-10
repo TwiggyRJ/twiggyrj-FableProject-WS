@@ -31,7 +31,19 @@
 				}
 				elseif(isset($_GET['story']) && isset($_GET['page']))
 				{
-					if (is_numeric($_GET['page']) && is_numeric($_GET['story']))
+					if(is_numeric($_GET['page']))
+					{
+						$story = $base->get_pages($_GET['page'], $_GET['story']);
+					}
+					elseif (is_numeric($_GET['page']) && is_numeric($_GET['story']))
+					{
+						$story = $base->get_pages($_GET['page'], $_GET['story']);
+					}
+					elseif (is_numeric($_GET['page']) && is_string($_GET['story']))
+					{
+
+					}
+					elseif(is_string($_GET['page']) && is_string($_GET['page']))
 					{
 						$story = $base->get_pages($_GET['page'], $_GET['story']);
 					}

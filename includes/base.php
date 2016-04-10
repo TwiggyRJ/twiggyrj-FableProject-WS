@@ -662,28 +662,34 @@ class Story
 
 	public function get_pages($page, $story)
 	{
+
 		$conn = connect_db();
 		$arr = array();
-		
-		$query = $conn->prepare("SELECT * from pages WHERE story = :story AND number = :page");
 
-		$query->bindParam(":story", $story, PDO::PARAM_STR);
-		$query->bindParam(":page", $page, PDO::PARAM_STR);
-
-		if ($query->rowCount() > 0)
+		if($page == "First")
 		{
+			$results = $conn->query("SELECT * from page where story ='$story' AND first = TRUE ORDER BY ID");
+		}
+		else
+		{
+			$results = $conn->query("SELECT * from page where story ='$story' AND page_number = '$page' ORDER BY ID");
+		}
+		
+
+		if ($results->rowCount() > 0)
+		{
+			
 			header ("Content-type: application/json");
 			header("HTTP/1.1 200 OK");
 			
-			while($row = $results->fetch())
-			{
-
+			while($row = $results->fetch()){
+			
 				$id = $row['ID'];
 				$story = $row['story'];
 				$title = $row['title'];
 				$content = $row['content'];
-				$content_2 = $row['content_2'];
-				$number = $row['number'];
+				$second_content = $row['second_content'];
+				$number = $row['page_number'];
 				$interaction = $row['interaction'];
 				$easy_interaction = $row['easy_interaction'];
 				$easy_interaction_answer = "";
@@ -747,15 +753,18 @@ class Story
 					$humour_interaction_answer = $row_intHu['answer'];
 				}
 
-				$pages_array = array("ID" => $id, "story" => $story, "title" => $title, "content" => $content, "content_2" => $content_2, "number" => $number, "interaction" => $interaction, "interaction_type" => $interaction_type, "easy_interaction" => $easy_interaction, "easy_interaction_answer" => $easy_interaction_answer, "medium_interaction" => $medium_interaction_answer, "hard_interaction" => $hard_interaction, "hard_interaction_answer" => $hard_interaction_answer, "humour_interaction" => $humour_interaction, "humour_interaction_answer" => $humour_interaction_answer, "option1" => $option1, "option1_Dest" => $option1_Dest, "option2" => $option2, "option2_Dest" => $option2_Dest, "optionSpecialSuccess" => $optionSpecialSuccess, "optionSpecialFailure" => $optionSpecialFailure, "first" => $first);
+				$pages_array = array("ID" => $id, "story" => $story, "title" => $title, "content" => $content, "content_2" => $second_content, "number" => $number, "interaction" => $interaction, "interaction_type" => $interaction_type, "easy_interaction" => $easy_interaction, "easy_interaction_answer" => $easy_interaction_answer, "medium_interaction" => $medium_interaction_answer, "hard_interaction" => $hard_interaction, "hard_interaction_answer" => $hard_interaction_answer, "humour_interaction" => $humour_interaction, "humour_interaction_answer" => $humour_interaction_answer, "option1" => $option1, "option1_Dest" => $option1_Dest, "option2" => $option2, "option2_Dest" => $option2_Dest, "optionSpecialSuccess" => $optionSpecialSuccess, "optionSpecialFailure" => $optionSpecialFailure, "first" => $first);
 				
 				array_push($arr, $pages_array);
-				
+					
 				echo json_encode($arr);
-							
+				
 			}
 		}
-
+		else
+		{
+			header("HTTP/1.1 404 Not Found");
+		}
 
 	}
 	
