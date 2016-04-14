@@ -347,7 +347,7 @@ class Story
 		}
 	}
 	
-	public function new_page($username, $password, $story, $title, $content, $number, $question, $easy_interaction, $easy_interaction_answer, $medium_interaction, $medium_interaction_answer, $hard_interaction, $hard_interaction_answer, $humour_interaction, $humour_interaction_answer, $option1, $option1_Dest, $option2, $option2_Dest, $optionSpecial, $reward, $first)
+	public function new_page($username, $password, $story, $title, $content, $content_2, $number, $question, $type, $easy_interaction, $easy_interaction_answer, $medium_interaction, $medium_interaction_answer, $hard_interaction, $hard_interaction_answer, $humour_interaction, $humour_interaction_answer, $option1, $option1_Dest, $option2, $option2_Dest, $optionSpecial, $optionFailure, $reward, $first)
 	{
 		$conn = connect_db();
 		
@@ -370,19 +370,25 @@ class Story
 						$mediumIntID = "";
 						$hardIntID = "";
 						$humourIntID = "";
-						
+						$difficulty = "";
+
 						if($easy_interaction != "" && $easy_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+
+							$difficulty = "Easy";
+
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty, destination, failure) VALUES (:story, :page, :type, :interaction, :answer, :difficulty, :destination, :failure)");	
 							$query->bindParam(":story", $story, PDO::PARAM_STR);
-							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":page", $number, PDO::PARAM_STR);
 							$query->bindParam(":type", $type, PDO::PARAM_STR);
-							$query->bindParam(":interaction", $easy_interaction, PDO::PARAM_STR);
+							$query->bindParam(":interaction", htmlspecialchars($easy_interaction), PDO::PARAM_STR);
 							$query->bindParam(":answer", $easy_interaction_answer, PDO::PARAM_STR);
-							$query->bindParam(":difficulty", "easy", PDO::PARAM_STR);
+							$query->bindParam(":difficulty", $difficulty, PDO::PARAM_STR);
+							$query->bindParam(":destination", $optionSpecial, PDO::PARAM_STR);
+							$query->bindParam(":failure", $optionFailure, PDO::PARAM_STR);
 							$query->execute();
 							
-							$interactions = $conn->query("SELECT ID FROM page WHERE page = '$title' AND difficulty = 'easy' AND interaction = '$easy_interaction'");
+							$interactions = $conn->query("SELECT ID FROM interactions WHERE page = '$number' AND difficulty = 'Easy' AND interaction = '$easy_interaction'");
 							
 							//only adds a value to the variable if there is a valid value to add
 							while($row_inters = $interactions->fetch())
@@ -394,16 +400,21 @@ class Story
 						
 						if($medium_interaction != "" && $medium_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+
+							$difficulty = "Normal";
+
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty, destination, failure) VALUES (:story, :page, :type, :interaction, :answer, :difficulty, :destination, :failure)");
 							$query->bindParam(":story", $story, PDO::PARAM_STR);
-							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":page", $number, PDO::PARAM_STR);
 							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $medium_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $medium_interaction_answer, PDO::PARAM_STR);
-							$query->bindParam(":difficulty", "medium", PDO::PARAM_STR);
+							$query->bindParam(":difficulty", $difficulty, PDO::PARAM_STR);
+							$query->bindParam(":destination", $optionSpecial, PDO::PARAM_STR);
+							$query->bindParam(":failure", $optionFailure, PDO::PARAM_STR);
 							$query->execute();
 							
-							$interactions = $conn->query("SELECT ID FROM page WHERE page = '$title' AND difficulty = 'medium' AND interaction = '$medium_interaction'");
+							$interactions = $conn->query("SELECT ID FROM interactions WHERE page = '$number' AND difficulty = 'Normal' AND interaction = '$medium_interaction'");
 							
 							//only adds a value to the variable if there is a valid value to add
 							while($row_inters = $interactions->fetch())
@@ -415,16 +426,21 @@ class Story
 						
 						if($hard_interaction != "" && $hard_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+
+							$difficulty = "Hard";
+
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty, destination, failure) VALUES (:story, :page, :type, :interaction, :answer, :difficulty, :destination, :failure)");
 							$query->bindParam(":story", $story, PDO::PARAM_STR);
-							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":page", $number, PDO::PARAM_STR);
 							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $hard_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $hard_interaction_answer, PDO::PARAM_STR);
-							$query->bindParam(":difficulty", "hard", PDO::PARAM_STR);
+							$query->bindParam(":difficulty", $difficulty, PDO::PARAM_STR);
+							$query->bindParam(":destination", $optionSpecial, PDO::PARAM_STR);
+							$query->bindParam(":failure", $optionFailure, PDO::PARAM_STR);
 							$query->execute();
 							
-							$interactions = $conn->query("SELECT ID FROM page WHERE page = '$title' AND difficulty = 'hard' AND interaction = '$hard_interaction'");
+							$interactions = $conn->query("SELECT ID FROM interactions WHERE page = '$number' AND difficulty = 'Hard' AND interaction = '$hard_interaction'");
 							
 							//only adds a value to the variable if there is a valid value to add
 							while($row_inters = $interactions->fetch())
@@ -436,16 +452,21 @@ class Story
 						
 						if($humour_interaction != "" && $humour_interaction_answer != "")
 						{
-							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty) VALUES (:story, :page, :type, :interaction, :answer, :difficulty)");	
+
+							$difficulty = "Humour";
+
+							$query = $conn->prepare("INSERT INTO interactions (story, page, type, interaction, answer, difficulty, destination, failure) VALUES (:story, :page, :type, :interaction, :answer, :difficulty, :destination, :failure)");
 							$query->bindParam(":story", $story, PDO::PARAM_STR);
-							$query->bindParam(":page", $title, PDO::PARAM_STR);
+							$query->bindParam(":page", $number, PDO::PARAM_STR);
 							$query->bindParam(":type", $type, PDO::PARAM_STR);
 							$query->bindParam(":interaction", $humour_interaction, PDO::PARAM_STR);
 							$query->bindParam(":answer", $humour_interaction_answer, PDO::PARAM_STR);
-							$query->bindParam(":difficulty", "humour", PDO::PARAM_STR);
+							$query->bindParam(":difficulty", $difficulty, PDO::PARAM_STR);
+							$query->bindParam(":destination", $optionSpecial, PDO::PARAM_STR);
+							$query->bindParam(":failure", $optionFailure, PDO::PARAM_STR);
 							$query->execute();
 							
-							$interactions = $conn->query("SELECT ID FROM page WHERE page = '$title' AND difficulty = 'humour' AND interaction = '$humour_interaction'");
+							$interactions = $conn->query("SELECT ID FROM interactions WHERE page = '$number' AND difficulty = 'Humour' AND interaction = '$humour_interaction'");
 							
 							//only adds a value to the variable if there is a valid value to add
 							while($row_inters = $interactions->fetch())
@@ -454,12 +475,16 @@ class Story
 							}
 						}
 						
+						$content = addslashes($content);
+						$content_2 = addslashes($content_2);
+						$question = addslashes($question);
 						
 						// a prepared statement that should help prevent SQL Injections
-						$query = $conn->prepare("INSERT INTO page (story, title, content, number, interaction, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, first) VALUES (:story, :title, :content, :number, :question, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :goodies, :first)");	
+						$query = $conn->prepare("INSERT INTO page (story, title, content, second_content, page_number, interaction, easy_interaction, medium_interaction, hard_interaction, humour_interaction, option1, option1_Dest, option2, option2_Dest, optionSpecial, goodies, first) VALUES (:story, :title, :content, :content_2, :number, :question, :easy_interaction, :medium_interaction, :hard_interaction, :humour_interaction, :option1, :option1Dest, :option2, :option2Dest, :optionSpecial, :goodies, :first)");	
 						$query->bindParam(":story", $story, PDO::PARAM_STR);
 						$query->bindParam(":title", $title, PDO::PARAM_STR);
 						$query->bindParam(":content", $content, PDO::PARAM_STR);
+						$query->bindParam(":content_2", $content_2, PDO::PARAM_STR);
 						$query->bindParam(":number", $number, PDO::PARAM_STR);
 						$query->bindParam(":question", $question, PDO::PARAM_STR);
 						$query->bindParam(":easy_interaction", $easyIntID, PDO::PARAM_STR);
@@ -694,10 +719,10 @@ class Story
 				$id = $row['ID'];
 				$story = $row['story'];
 				$title = $row['title'];
-				$content = $row['content'];
-				$second_content = $row['second_content'];
+				$content = stripslashes($row['content']);
+				$second_content = stripslashes($row['second_content']);
 				$number = $row['page_number'];
-				$interaction = $row['interaction'];
+				$interaction = stripslashes($row['interaction']);
 				$easy_interaction = $row['easy_interaction'];
 				$easy_interaction_answer = "";
 				$interaction_destination = "";
@@ -874,6 +899,88 @@ class GenericInfo
 				echo json_encode($arr);
 			}
 		}
+	}
+
+	public function tile_update($method)
+	{
+
+		$conn = connect_db();
+
+		if($method == "onLoad")
+		{
+			$query = $conn->prepare("SELECT * from stories ORDER BY ID DESC LIMIT 1");
+			$query->execute();
+			
+			while($row = $query->fetch(PDO::FETCH_ASSOC))
+			{
+				header('Content-type: application/xml');
+				header("HTTP/1.1 200 OK");
+				
+				$id = $row['ID'];
+				$title = $row['title'];
+				$image = $row['image'];
+				$desc = $row['description'];
+
+				// collects story data, then prepares the data ready for transport
+				
+					$privacy_array = "<tile>
+						<visual version='2'>
+							<binding fallback='TileWidePeekImageAndText01' template='TileWide310x150PeekImageAndText01'>
+
+								<image id='1' alt='alt text' src='$image'/>
+
+								<text id='1'>Our Latest Story: $title</text>
+
+							</binding>
+						</visual>
+					</tile>";
+				
+				print $privacy_array;
+			}
+		}
+		elseif($method == "latestStory")
+		{
+
+			$arr = array();
+
+			$query = $conn->prepare("SELECT * from stories ORDER BY ID DESC LIMIT 1");
+			$query->execute();
+			
+			while($row = $query->fetch(PDO::FETCH_ASSOC))
+			{
+				header ("Content-type: application/json");
+				header("HTTP/1.1 200 OK");
+				
+				$id = $row['ID'];
+				$title = $row['title'];
+				$desc = $row['description'];
+				$type = $row['type'];
+				$owner = $row['owner'];
+				$rec = $row['recommended'];
+				$img = $row['image'];
+				$author = "";
+				
+				$queryCheckName = $conn->prepare("SELECT * from users WHERE ID = :id");
+			
+				$queryCheckName->bindParam(":id", $owner, PDO::PARAM_STR);
+				$queryCheckName->execute();
+				
+				while($rowCheckName = $queryCheckName->fetch(PDO::FETCH_ASSOC))
+				{
+					$author= $rowCheckName['username'];
+				}
+
+				// collects story data, then prepares the data ready for transport
+				
+				$stories_array = array("ID" => $id, "title" => $title, "description" => $desc, "type" => $type, "ownerID" => $owner, "ownerName" => $author, "image" => $img, "recommended" => $rec);
+								
+				array_push($arr, $stories_array);
+					
+				echo json_encode($arr);
+			}
+
+		}
+
 	}
 	
 }

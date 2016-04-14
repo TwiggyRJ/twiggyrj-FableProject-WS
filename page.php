@@ -77,6 +77,7 @@
 					$storyTitle = $_POST['storyTitle'];
 					$title = $_POST['title'];
 					$content = $_POST['content'];
+					$content_2 = $_POST['content_2'];
 					$pageInteraction = $_POST['pageInteraction'];
 					$pageInteractionType = $_POST['pageInteractionType'];
 					$pageEInteraction = $_POST['pageEInteraction'];
@@ -94,8 +95,9 @@
 					$pageOptionA_Dest = $_POST['pageOptionADest'];
 					$pageOptionB_Dest = $_POST['pageOptionBDest'];
 					$pageInteractionOption = $_POST['pageInteractionOption'];
+					$pageInteractionFailure = $_POST['pageInteractionFailure'];
 					$pageReward = $_POST['pageReward'];
-					$pagedata = $base->new_page($user, $pass, $storyTitle, $title, $content, $pageNumber, $pageInteraction, $pageInteractionType, $pageEInteraction, $pageEInteractionAnswer, $pageMInteraction, $pageMInteractionAnswer, $pageHInteraction, $pageHInteractionAnswer, $pageJInteraction, $pageJInteractionAnswer, $pageOptionA, $pageOptionA_Dest, $pageOptionB, $pageOptionB_Dest, $pageInteractionOption, $pageReward, $pageFirst);
+					$pagedata = $base->new_page($user, $pass, $storyTitle, $title, $content, $content_2, $pageNumber, $pageInteraction, $pageInteractionType, $pageEInteraction, $pageEInteractionAnswer, $pageMInteraction, $pageMInteractionAnswer, $pageHInteraction, $pageHInteractionAnswer, $pageJInteraction, $pageJInteractionAnswer, $pageOptionA, $pageOptionA_Dest, $pageOptionB, $pageOptionB_Dest, $pageInteractionOption, $pageInteractionFailure, $pageReward, $pageFirst);
 				}
 				else
 				{
