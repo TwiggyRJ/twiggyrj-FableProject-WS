@@ -13,7 +13,7 @@ date_default_timezone_set('Europe/London');
 
 function connect_db(){
 
-	return new PDO("mysql:host=localhost;dbname=fable_project", "kshatriy_ntd", "SCcR0KpU6IOw", array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+	return new PDO("mysql:host=localhost;dbname=fable_project", "user", "pass", array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
 
 }
 
